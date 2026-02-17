@@ -16,19 +16,19 @@ class Homepage extends StatelessWidget {
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: CustomNavbar(
-          onCalendarTap: () async {
-            DateTime? selectedDate = await showDatePicker(
-              helpText: "Watch The Days",
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
+        onCalendarTap: () async {
+          DateTime? selectedDate = await showDatePicker(
+            helpText: "Watch The Days",
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+          );
 
-            if (selectedDate != null) {
-              print(selectedDate);
-            }
-          },
+          if (selectedDate != null) {
+            print(selectedDate);
+          }
+        },
         onNotesTap: () {
           print("Notes tapped");
         },
@@ -41,10 +41,7 @@ class Homepage extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.bottomRight,
             end: Alignment.topLeft,
-            colors: [
-              Color(0xff8ED0FA),
-              Color(0xff3786EB),
-            ],
+            colors: [Color(0xff8ED0FA), Color(0xff3786EB)],
           ),
         ),
         child: Material(
@@ -55,16 +52,18 @@ class Homepage extends StatelessWidget {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () {
-              Navigator.push(context,MaterialPageRoute(
-                builder: (context) => AddTask(),
-              ),);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddTask()),
+              );
             },
             child: const Center(
               child: Icon(Icons.add, size: 30, color: Colors.white),
             ),
           ),
         ),
-      ),      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -82,41 +81,50 @@ class Homepage extends StatelessWidget {
               const SizedBox(height: 20),
               CustomSearchField(),
               const SizedBox(height: 20),
-              Container(child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      "Tasks:",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              Container(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          "Tasks:",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    ...taskProvider.activeTasks.map((task) => CustomTask(task: task)).toList(),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                ...taskProvider.activeTasks.map((task) => CustomTask(task: task)).toList(),
-              ],),),
-              Container(child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      "Done:",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          "Done:",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    ...taskProvider.doneTasks
+                        .map((task) => CustomTask(task: task))
+                        .toList(),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                ...taskProvider.doneTasks.map((task) => CustomTask(task: task)).toList(),
-              ],),),
-
+              ),
             ],
           ),
         ),

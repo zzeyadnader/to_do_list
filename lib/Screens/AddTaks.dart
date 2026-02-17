@@ -211,6 +211,7 @@ class _AddTaskState extends State<AddTask> {
                         }
 
                         Task newTask = Task(
+                          id:DateTime.now().millisecondsSinceEpoch.toString(),
                           title: _nameController.text,
                           dueDate: _selectedDate!,
                           isDone: false,

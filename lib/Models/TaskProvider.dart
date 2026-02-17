@@ -3,9 +3,9 @@ import '../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
   List<Task> tasks = [
-    Task(title: "Study", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "High" , description:  "Heloooo") ,
-    Task(title: "Play minecraft", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "Low" , description:  "Heloooo"),
-    Task(title: "Sleep", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "Mid" , description:  "Heloooo"),
+    Task(id: "5",title: "Study", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "High" , description:  "Heloooo") ,
+    Task(id: "8",title: "Play minecraft", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "Low" , description:  "Heloooo"),
+    Task(id: "9",title: "Sleep", dueDate: DateTime(2026, 3, 15), isDone: false, Priority: "Mid" , description:  "Heloooo"),
   ];
 
   String _searchQuery = '';
@@ -34,6 +34,10 @@ class TaskProvider with ChangeNotifier {
   // add new task
   void addTask(Task task) {
     tasks.add(task);
+    notifyListeners();
+  }
+  void deleteTask(Task task) {
+    tasks.remove(task);
     notifyListeners();
   }
   //sort (not worked yet)
