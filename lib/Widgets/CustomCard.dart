@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../Models/TaskProvider.dart';
+import '../ViewModels/TaskProvider.dart';
 class Customcard extends StatelessWidget {
   const Customcard({super.key});
 

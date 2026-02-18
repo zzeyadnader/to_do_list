@@ -1,8 +1,8 @@
   import 'package:flutter/material.dart';
   import 'package:provider/provider.dart';
-  import 'package:to_do_list/Widgets/Button.dart';
-  import '../Models/TaskProvider.dart';
-  import '../models/task.dart';
+  import 'package:to_do_list/Widgets/CustomButton.dart';
+  import '../ViewModels/TaskProvider.dart';
+  import 'package:to_do_list/Models/Task.dart';
   class CustomTask extends StatelessWidget {
     final Task task;
 
@@ -13,6 +13,9 @@
       return Dismissible(
         key: ValueKey(task.id),
         direction: DismissDirection.endToStart,
+        onDismissed: (direction) {
+          Provider.of<TaskProvider>(context, listen: false).deleteTask(task);
+        },
         background: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -22,9 +25,7 @@
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: const Icon(Icons.delete, color: Colors.white, size: 28),
         ),
-        onDismissed: (_) {
-          context.read<TaskProvider>().deleteTask(task);
-        },
+
             child: InkWell(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
@@ -82,7 +83,7 @@
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${task.Priority} Priority",
+                      "${task.priority} Priority",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 13,
@@ -105,7 +106,7 @@
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Text(task.title + " Description is"),
+          title: Text("${task.title} Description is"),
           content: Text(
             task.description ?? "No description",
             style: const TextStyle(fontSize: 14),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/Widgets/Button.dart';
 import 'package:provider/provider.dart';
-import '../Models/TaskProvider.dart';
-import '../models/task.dart';
-import '../Widgets/CustomText.dart';
+import 'package:to_do_list/ViewModels/TaskProvider.dart';
+import 'package:to_do_list/Widgets/CustomButton.dart';
+import 'package:to_do_list/Widgets/CustomText.dart';
+import 'package:to_do_list/Models/Task.dart';
+
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -149,7 +150,7 @@ class _AddTaskState extends State<AddTask> {
                       }).toList(),
                     ),
                     Customtext("DeadLine Date"),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width * 0.9,
                       child: TextField(
                         controller: _dateController,
@@ -215,7 +216,7 @@ class _AddTaskState extends State<AddTask> {
                           title: _nameController.text,
                           dueDate: _selectedDate!,
                           isDone: false,
-                          Priority: _priority,
+                          priority: _priority,
                           description:_descController.text
                         );
                         Provider.of<TaskProvider>(context, listen: false).addTask(newTask);

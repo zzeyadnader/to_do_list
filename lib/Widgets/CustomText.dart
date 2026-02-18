@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 class Customtext extends StatelessWidget {
   String? title;
-  Customtext(this.title);
+  Customtext(this.title, {super.key});
   @override
   Widget build(BuildContext context) {
     return  Padding(
@@ -18,6 +18,5 @@ class Customtext extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

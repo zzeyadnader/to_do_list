@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Models/TaskProvider.dart';
+import '../ViewModels/TaskProvider.dart';
 
 class CustomSearchField extends StatefulWidget {
   const CustomSearchField({super.key});

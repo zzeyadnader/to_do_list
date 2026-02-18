@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:to_do_list/Screens/AddTaks.dart';
+import 'package:to_do_list/View/AddTaks.dart';
+import 'package:to_do_list/ViewModels/TaskProvider.dart'; // Corrected
 import 'package:to_do_list/Widgets/CustomAppbar.dart';
 import 'package:to_do_list/Widgets/CustomCard.dart';
+import 'package:to_do_list/Widgets/CustomNavbar.dart';   // Corrected
 import 'package:to_do_list/Widgets/CustomSearchField.dart';
-import '../Models/TaskProvider.dart';
-import '../Widgets/CustomNavbar.dart';
-import '../Widgets/CustomTask.dart';
+import 'package:to_do_list/Widgets/CustomTask.dart';     // Corrected
 
 class Homepage extends StatelessWidget {
+  const Homepage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
@@ -98,7 +100,7 @@ class Homepage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ...taskProvider.activeTasks.map((task) => CustomTask(task: task)).toList(),
+                    ...taskProvider.activeTasks.map((task) => CustomTask(task: task)),
                   ],
                 ),
               ),
@@ -121,7 +123,7 @@ class Homepage extends StatelessWidget {
                     const SizedBox(height: 20),
                     ...taskProvider.doneTasks
                         .map((task) => CustomTask(task: task))
-                        .toList(),
+                        ,
                   ],
                 ),
               ),

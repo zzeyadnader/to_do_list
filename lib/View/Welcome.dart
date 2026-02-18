@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/Screens/HomePage.dart';
-
-import '../Widgets/Button.dart';
-
+import 'package:to_do_list/View//HomePage.dart';
+import 'package:to_do_list/Widgets/CustomButton.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
