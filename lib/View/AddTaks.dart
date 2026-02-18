@@ -211,16 +211,17 @@ class _AddTaskState extends State<AddTask> {
                           return;
                         }
 
-                        Task newTask = Task(
-                          id:DateTime.now().millisecondsSinceEpoch.toString(),
-                          title: _nameController.text,
-                          dueDate: _selectedDate!,
-                          isDone: false,
-                          priority: _priority,
-                          description:_descController.text
-                        );
+                        Task newTask = Task();
+                        newTask.id = DateTime.now().millisecondsSinceEpoch.toString();
+                        newTask.title=_nameController.text;
+                        newTask.deadline=_selectedDate!;
+                        newTask.createdAt=DateTime.now();
+                        newTask.updatedAt=DateTime.now();
+                        newTask.completed=false;
+                        newTask.user="user123";
+                        newTask.priority=_priority;
+                        newTask.description=_descController.text;
                         Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
-
                         Navigator.pop(context);
                       },
                     ))

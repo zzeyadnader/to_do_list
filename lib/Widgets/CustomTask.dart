@@ -53,7 +53,7 @@
             child: Row(
               children: [
                 Checkbox(
-                  value: task.isDone,
+                  value: task.completed,
                   onChanged: (_)  {
                     context.read<TaskProvider>().toggleTask(task);
                   },
@@ -62,7 +62,7 @@
                   shape: const CircleBorder(),
                 ),
                 Text(
-                  task.title,
+                  task.title.toString(),
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
@@ -74,7 +74,7 @@
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}",
+                      "${task.deadline!.day}/${task.deadline!.month}/${task.deadline!.year}",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,

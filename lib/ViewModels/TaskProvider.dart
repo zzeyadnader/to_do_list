@@ -11,26 +11,24 @@ class TaskProvider with ChangeNotifier {
   // not done
   List<Task> get activeTasks =>
       tasks
-          .where(
-            (t) =>
-        !t.isDone &&
-            t.title.toLowerCase().contains(_searchQuery.toLowerCase()),
+          .where((t) =>
+      t.completed != true &&
+          (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
       )
           .toList();
 
   // done
   List<Task> get doneTasks =>
       tasks
-          .where(
-            (t) =>
-        t.isDone &&
-            t.title.toLowerCase().contains(_searchQuery.toLowerCase()),
+          .where((t) =>
+      t.completed == true &&
+          (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
       )
           .toList();
 
   //switch value
   void toggleTask(Task task) async {
-    task.isDone = !task.isDone;
+    task.completed = !(task.completed ?? false);
     await task.save();
     notifyListeners();
   }
