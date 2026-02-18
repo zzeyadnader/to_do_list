@@ -7,6 +7,7 @@ import 'package:to_do_list/View/Welcome.dart';
 import 'package:to_do_list/View/HomePage.dart';
 import 'package:to_do_list/ViewModels/TaskProvider.dart';
 import 'package:to_do_list/Models/Task.dart';
+import 'package:to_do_list/ViewModels/authProvider.dart';
 
 
 void main() async {
@@ -19,15 +20,16 @@ void main() async {
 
   var taskBox = await Hive.openBox<Task>('tasks');
 
-
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => TaskProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: const Todo(),
     ),
   );
 }
-
 class Todo extends StatelessWidget {
   const Todo({super.key});
 
@@ -35,7 +37,7 @@ class Todo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Registerpage(),
+      home: Loginpage(),
     );
   }
 }

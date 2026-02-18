@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/Widgets/CustomAppbar.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_list/View/LoginPage.dart';
+import 'package:to_do_list/ViewModels/authProvider.dart';
 import 'package:to_do_list/Widgets/CustomTextField.dart';
 
 import '../Widgets/CustomButton.dart';
 class  Registerpage extends StatelessWidget {
-  TextEditingController controller = TextEditingController();
+  TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
   TextEditingController namecontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -25,6 +28,7 @@ class  Registerpage extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
+                // gradient لو محتاج
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -44,9 +48,7 @@ class  Registerpage extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-        
-            const SizedBox(height: 10),
+            ),            const SizedBox(height: 10),
             const SizedBox(height: 10),
             Container(
               width: MediaQuery.of(context).size.width * 0.85,
@@ -62,7 +64,7 @@ class  Registerpage extends StatelessWidget {
                 SizedBox(height: 50,),
                 Customtextfield(controller: namecontroller, hint: "username"),
                 SizedBox(height: 15,),
-                Customtextfield(controller: controller, hint: "Email"),
+                Customtextfield(controller: emailcontroller, hint: "Email"),
                 SizedBox(height: 15,),
                 Customtextfield(controller: passcontroller, hint: "Password"),
                 Padding(
@@ -70,11 +72,23 @@ class  Registerpage extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: CustomButton(title: "Login",onPressed: () {}),
+                    child: CustomButton(title: "Register",onPressed: () async {
+                      final error = await authProvider.register(
+                        emailcontroller.text.trim(),
+                        passcontroller.text.trim(),
+                        namecontroller.text.trim(),
+                      );
+                      if (error != null) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(error)));
+                      } else {
+                        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Loginpage(),));
+                      }
+                    }),
                   ),
                 ),
                 Padding(padding: EdgeInsets.only(top: 30 ) ,
-                  child:InkWell(child: Text("Already have an account? Login" , style: TextStyle(color: Colors.blue),),),
+                  child:InkWell(onTap:() => Navigator.pop(context) , child: Text("Already have an account? Login" , style: TextStyle(color: Colors.blue),),),
                 ),
         
               ],
