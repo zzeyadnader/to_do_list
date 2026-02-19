@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_list/ViewModels/TaskProvider.dart';
+import 'package:to_do_list/ViewModels/authProvider.dart';
 import 'package:to_do_list/Widgets/CustomButton.dart';
 import 'package:to_do_list/Widgets/CustomText.dart';
 import 'package:to_do_list/Models/Task.dart';
@@ -19,6 +20,7 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
+
 
   Future<void> _pickDate() async {
     DateTime initialDate = _selectedDate ?? DateTime.now();
@@ -49,6 +51,8 @@ class _AddTaskState extends State<AddTask> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    final taskProvider = context.read<TaskProvider>();
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -203,26 +207,24 @@ class _AddTaskState extends State<AddTask> {
                     SizedBox(height: 60,),
                     Padding(
                       padding: const EdgeInsets.only(right: 11 , top: 10),
-                      child: CustomButton(title: "Add Task" ,onPressed: () {
-                        if (_nameController.text.isEmpty || _selectedDate == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please enter task name and date")),
-                          );
-                          return;
-                        }
+                      child: CustomButton(title: "Add Task" ,onPressed: () async {
+                        if (authProvider.token == null) return;
 
-                        Task newTask = Task();
-                        newTask.id = DateTime.now().millisecondsSinceEpoch.toString();
-                        newTask.title=_nameController.text;
-                        newTask.deadline=_selectedDate!;
-                        newTask.createdAt=DateTime.now();
-                        newTask.updatedAt=DateTime.now();
-                        newTask.completed=false;
-                        newTask.user="user123";
-                        newTask.priority=_priority;
-                        newTask.description=_descController.text;
-                        Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
-                        Navigator.pop(context);
+                        final newTask = Task()
+                          ..title = _nameController.text.trim()
+                          ..description = _descController.text.trim()
+                          ..priority = _priority.toLowerCase()
+                          ..deadline = _selectedDate
+                          ..completed = false;
+
+                        try {
+                          await taskProvider.addTask2(newTask, authProvider.token!);
+                          Navigator.pop(context);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Error adding task: $e")),
+                          );
+                        }
                       },
                     ))
                   ],

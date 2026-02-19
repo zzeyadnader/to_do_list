@@ -1,5 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:provider/provider.dart';
+import 'package:to_do_list/ViewModels/authProvider.dart';
   import 'package:to_do_list/Widgets/CustomButton.dart';
   import '../ViewModels/TaskProvider.dart';
   import 'package:to_do_list/Models/Task.dart';
@@ -10,12 +11,16 @@
 
     @override
     Widget build(BuildContext context) {
+      final taskProvider = context.read<TaskProvider>();
+      final authProvider = context.read<AuthProvider>();
       return Dismissible(
         key: ValueKey(task.id),
         direction: DismissDirection.endToStart,
-        onDismissed: (direction) {
-          Provider.of<TaskProvider>(context, listen: false).deleteTask(task);
-        },
+        onDismissed: (direction) async{
+          if (authProvider.token != null) {
+            await Provider.of<TaskProvider>(context, listen: false)
+                .deleteTask(task, authProvider.token!);
+          }        },
         background: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -53,9 +58,11 @@
             child: Row(
               children: [
                 Checkbox(
-                  value: task.completed,
-                  onChanged: (_)  {
-                    context.read<TaskProvider>().toggleTask(task);
+                  value: task.completed ?? false,
+                  onChanged: (_) async {
+                    if (authProvider.token != null) {
+                      await taskProvider.toggleTask2(task, authProvider.token!);
+                    }
                   },
                   activeColor: Colors.white,
                   checkColor: const Color(0xff3786EB),
