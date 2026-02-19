@@ -1,5 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:provider/provider.dart';
+import 'package:to_do_list/View/UpdateTask.dart';
 import 'package:to_do_list/ViewModels/authProvider.dart';
   import 'package:to_do_list/Widgets/CustomButton.dart';
   import '../ViewModels/TaskProvider.dart';
@@ -15,13 +16,37 @@ import 'package:to_do_list/ViewModels/authProvider.dart';
       final authProvider = context.read<AuthProvider>();
       return Dismissible(
         key: ValueKey(task.id),
-        direction: DismissDirection.endToStart,
-        onDismissed: (direction) async{
-          if (authProvider.token != null) {
-            await Provider.of<TaskProvider>(context, listen: false)
-                .deleteTask(task, authProvider.token!);
-          }        },
+        direction: DismissDirection.horizontal,
+
+        // دي أهم حاجة
+        confirmDismiss: (direction) async {
+          if (direction == DismissDirection.endToStart) {
+            // لو Swipe يمين لشمال (مسح)
+            if (authProvider.token != null) {
+              await taskProvider.deleteTask(task, authProvider.token!);
+            }
+            return true; // فعل المسح
+          } else if (direction == DismissDirection.startToEnd) {
+            // لو Swipe شمال ليمين (Edit)
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => Updatetask(task: task)),
+            );
+            return false; // ماتمسحش العنصر
+          }
+          return false;
+        },
+
         background: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.grey,
+          ),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: const Icon(Icons.edit, color: Colors.white, size: 28),
+        ),
+        secondaryBackground: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: Colors.red,
@@ -31,15 +56,13 @@ import 'package:to_do_list/ViewModels/authProvider.dart';
           child: const Icon(Icons.delete, color: Colors.white, size: 28),
         ),
 
-            child: InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              hoverColor: Colors.transparent, // مهم للويب
-              focusColor: Colors.transparent, // مهم للكيبورد
-              borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            _showTaskDetails(context, task);
-          },
+        child: InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => _showTaskDetails(context, task),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.95,
             margin: const EdgeInsets.only(bottom: 10),

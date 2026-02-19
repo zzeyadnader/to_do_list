@@ -137,4 +137,32 @@ class TaskProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  // داخل TaskProvider
+  Future<void> updateTask2(Task task, String token) async {
+    // تحديث محلي في Hive
+    final index = _taskBox.values.toList().indexWhere((t) => t.id == task.id);
+    if (index != -1) {
+      await _taskBox.putAt(index, task);
+      notifyListeners();
+    }
+
+    // تحديث على السيرفر
+    final result = await _apiService.updateTodo(token, task.id!, {
+      "title": task.title,
+      "description": task.description,
+      "priority": task.priority,
+      "deadline": task.deadline?.toIso8601String(),
+      "completed": task.completed,
+    });
+
+    if (result.containsKey("error")) {
+      debugPrint("Error updating task: ${result['error']}");
+      final oldTask = _taskBox.getAt(index);
+      if (oldTask != null) {
+        await _taskBox.putAt(index, oldTask);
+        notifyListeners();
+      }
+    }
+  }
+
 }
