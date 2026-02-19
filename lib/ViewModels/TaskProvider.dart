@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:to_do_list/Models/Task.dart';
 import 'package:to_do_list/Services/ApiService.dart';
 import 'package:to_do_list/ViewModels/authProvider.dart';
 
 class TaskProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
-  final Box<Task> _taskBox = Hive.box<Task>('tasks');
-  String _searchQuery = '';
+  List<Task> _tasks = [];
 
-  List<Task> get tasks => _taskBox.values.toList();
+  List<Task> get tasks => _tasks;
+
+  String _searchQuery = '';
 
   bool isLoading = false;
 
@@ -19,12 +19,7 @@ class TaskProvider with ChangeNotifier {
 
     try {
       final response = await _apiService.getAllTodos(token);
-
-      await _taskBox.clear();
-
-      for (var json in response) {
-        _taskBox.add(Task.fromJson(json));
-      }
+      _tasks = response.map<Task>((e) => Task.fromJson(e)).toList();
     } catch (e) {
       debugPrint("Error fetching todos: $e");
     }
@@ -34,27 +29,22 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> toggleTask2(Task task, String token) async {
-    // عكس حالة الـ completed محليًا
+    final oldValue = task.completed;
+
     task.completed = !(task.completed ?? false);
-    await task.save();
     notifyListeners();
 
-    // تحديث السيرفر
-    final result = await _apiService.updateTodo(token, task.id!, {
-      "completed": task.completed,
-    });
+    final result = await _apiService.updateTodo(
+      token,
+      task.id!,
+      {"completed": task.completed},
+    );
 
     if (result.containsKey("error")) {
-      // لو فيه مشكلة، رجع القيمة للوراء
-      task.completed = !(task.completed ?? false);
-      await task.save();
+      task.completed = oldValue;
       notifyListeners();
-      debugPrint("Error updating task: ${result["error"]}");
     }
   }
-
-
-  // not done
   List<Task> get activeTasks =>
       tasks
           .where((t) =>
@@ -62,8 +52,6 @@ class TaskProvider with ChangeNotifier {
           (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
       )
           .toList();
-
-  // done
   List<Task> get doneTasks =>
       tasks
           .where((t) =>
@@ -72,81 +60,46 @@ class TaskProvider with ChangeNotifier {
       )
           .toList();
 
-  //switch value
-  void toggleTask(Task task) async {
-    task.completed = !(task.completed ?? false);
-    await task.save();
-    notifyListeners();
-  }
-
   //search query
   void updateSearchQuery(String query) {
     _searchQuery = query;
     notifyListeners(); // rebuild UI with filtered tasks
   }
 
-  // add new task
-  void addTask(Task task) async {
-    await _taskBox.add(task);
-    notifyListeners();
-  }
-
-// TaskProvider.dart
   Future<void> deleteTask(Task task, String token) async {
-    // احفظ الـ id قبل الحذف محليًا
-    final taskId = task.id;
-
-    // احذف من Hive مؤقتًا
-    await task.delete();
+    _tasks.remove(task);
     notifyListeners();
 
-    final result = await _apiService.deleteTodo(token, taskId!);
+    final result = await _apiService.deleteTodo(token, task.id!);
 
     if (result.containsKey("error")) {
-      await _taskBox.add(task);
+      _tasks.add(task);
       notifyListeners();
-      debugPrint("Error deleting task: ${result["error"]}");
     }
   }
 
   Future<void> addTask2(Task task, String token) async {
-    await _taskBox.add(task);
+    _tasks.add(task);
     notifyListeners();
 
     final result = await _apiService.createTodo(token, task.toJson());
 
     if (result.containsKey("error")) {
-      await task.delete();
+      _tasks.remove(task);
       notifyListeners();
-      debugPrint("Error adding task: ${result["error"]}");
     } else {
       task.id = result["_id"];
-      await task.save();
-      notifyListeners();
-    }
-
-    //sort (not worked yet)
-    void sortByPriority() {
-      final priorityOrder = {"High": 3, "Mid": 2, "Low": 1};
-
-      final sorted = tasks
-        ..sort((a, b) =>
-            (priorityOrder[b.priority] ?? 0)
-                .compareTo(priorityOrder[a.priority] ?? 0));
-
       notifyListeners();
     }
   }
-  // داخل TaskProvider
-  Future<void> updateTask2(Task task, String token) async {
-    // تحديث محلي في Hive
-    final index = _taskBox.values.toList().indexWhere((t) => t.id == task.id);
-    if (index != -1) {
-      await _taskBox.putAt(index, task);
-      notifyListeners();
-    }
 
-    // تحديث على السيرفر
+  Future<void> updateTask2(Task task, String token) async {
+    final index = _tasks.indexWhere((t) => t.id == task.id);
+    final oldTask = _tasks[index];
+
+    _tasks[index] = task;
+    notifyListeners();
+
     final result = await _apiService.updateTodo(token, task.id!, {
       "title": task.title,
       "description": task.description,
@@ -156,13 +109,8 @@ class TaskProvider with ChangeNotifier {
     });
 
     if (result.containsKey("error")) {
-      debugPrint("Error updating task: ${result['error']}");
-      final oldTask = _taskBox.getAt(index);
-      if (oldTask != null) {
-        await _taskBox.putAt(index, oldTask);
-        notifyListeners();
-      }
+      _tasks[index] = oldTask;
+      notifyListeners();
     }
   }
-
 }
