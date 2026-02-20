@@ -28,7 +28,7 @@ class _AddTaskState extends State<AddTask> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
@@ -118,7 +118,7 @@ class _AddTaskState extends State<AddTask> {
                     Customtext("Priority"),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: ['High', 'Medium', 'Low'].map((value) {
+                      children: ['high', 'medium', 'low'].map((value) {
                         return Container(
                           margin: EdgeInsets.only(right: 10), // spacing between buttons
                           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),

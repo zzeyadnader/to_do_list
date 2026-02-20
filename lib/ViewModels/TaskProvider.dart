@@ -6,7 +6,6 @@ import 'package:to_do_list/ViewModels/authProvider.dart';
 class TaskProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
   List<Task> _tasks = [];
-
   List<Task> get tasks => _tasks;
 
   String _searchQuery = '';

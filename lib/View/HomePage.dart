@@ -43,7 +43,7 @@ class _HomepageState extends State<Homepage> {
             helpText: "Watch The Days",
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(2000),
+            firstDate: DateTime.now(),
             lastDate: DateTime(2100),
           );
 
@@ -140,7 +140,7 @@ class _HomepageState extends State<Homepage> {
               ),
               const SizedBox(height: 20),
               taskProvider.isLoading
-                  ? const SizedBox.shrink()
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xff8ED0FA)))
                   : Column(
                 children: taskProvider.doneTasks
                     .map((task) => CustomTask(task: task))
