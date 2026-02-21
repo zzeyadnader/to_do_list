@@ -66,7 +66,7 @@ class  Registerpage extends StatelessWidget {
                 SizedBox(height: 15,),
                 Customtextfield(controller: emailcontroller, hint: "Email"),
                 SizedBox(height: 15,),
-                Customtextfield(controller: passcontroller, hint: "Password"),
+                Customtextfield(controller: passcontroller, hint: "Password" , isPassword: true,),
                 Padding(
                   padding: const EdgeInsets.only(top: 30, right: 70 ,left: 70),
                   child: SizedBox(

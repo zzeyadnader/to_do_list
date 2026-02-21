@@ -67,9 +67,9 @@ class  Loginpage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 50,),
-                Customtextfield(controller: emailController, hint: "Email"),
+                Customtextfield(controller: emailController, hint: "Email",isPassword : false),
                 SizedBox(height: 15,),
-                Customtextfield(controller: passcontroller, hint: "Password"),
+                Customtextfield(controller: passcontroller, hint: "Password" , isPassword : true),
                 Padding(
                   padding: const EdgeInsets.only(top: 30, right: 70 ,left: 70),
                   child: SizedBox(
