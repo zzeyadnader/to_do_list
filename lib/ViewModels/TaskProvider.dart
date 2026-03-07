@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/Models/Task.dart';
 import 'package:to_do_list/Services/ApiService.dart';
-import 'package:to_do_list/ViewModels/authProvider.dart';
+import '../Repositories/TaskRepository.dart';
 
 class TaskProvider with ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final TaskRepository repository = TaskRepository(ApiService());
+
   List<Task> _tasks = [];
   List<Task> get tasks => _tasks;
 
   String _searchQuery = '';
-
   bool isLoading = false;
 
   Future<void> fetchTodos(String token) async {
@@ -17,8 +17,7 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.getAllTodos(token);
-      _tasks = response.map<Task>((e) => Task.fromJson(e)).toList();
+      _tasks = await repository.getTodos(token);
     } catch (e) {
       debugPrint("Error fetching todos: $e");
     }
@@ -33,7 +32,7 @@ class TaskProvider with ChangeNotifier {
     task.completed = !(task.completed ?? false);
     notifyListeners();
 
-    final result = await _apiService.updateTodo(
+    final result = await repository.updateTodo(
       token,
       task.id!,
       {"completed": task.completed},
@@ -44,32 +43,35 @@ class TaskProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  List<Task> get activeTasks =>
-      tasks
-          .where((t) =>
-      t.completed != true &&
-          (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
-      )
-          .toList();
-  List<Task> get doneTasks =>
-      tasks
-          .where((t) =>
-      t.completed == true &&
-          (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
-      )
-          .toList();
 
-  //search query
+  List<Task> get activeTasks => tasks
+      .where(
+        (t) =>
+    t.completed != true &&
+        (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
+            false),
+  )
+      .toList();
+
+  List<Task> get doneTasks => tasks
+      .where(
+        (t) =>
+    t.completed == true &&
+        (t.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
+            false),
+  )
+      .toList();
+
   void updateSearchQuery(String query) {
     _searchQuery = query;
-    notifyListeners(); // rebuild UI with filtered tasks
+    notifyListeners();
   }
 
   Future<void> deleteTask(Task task, String token) async {
     _tasks.remove(task);
     notifyListeners();
 
-    final result = await _apiService.deleteTodo(token, task.id!);
+    final result = await repository.deleteTodo(token, task.id!);
 
     if (result.containsKey("error")) {
       _tasks.add(task);
@@ -81,7 +83,7 @@ class TaskProvider with ChangeNotifier {
     _tasks.add(task);
     notifyListeners();
 
-    final result = await _apiService.createTodo(token, task.toJson());
+    final result = await repository.createTodo(token, task.toJson());
 
     if (result.containsKey("error")) {
       _tasks.remove(task);
@@ -99,7 +101,7 @@ class TaskProvider with ChangeNotifier {
     _tasks[index] = task;
     notifyListeners();
 
-    final result = await _apiService.updateTodo(token, task.id!, {
+    final result = await repository.updateTodo(token, task.id!, {
       "title": task.title,
       "description": task.description,
       "priority": task.priority,
